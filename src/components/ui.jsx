@@ -6,10 +6,11 @@ import { createPortal } from 'react-dom'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { House, BookOpen, Users, UserRound, ChevronLeft, X, Check } from 'lucide-react'
 
-// Brand mark: four-point sparkle (Seashell) or five-petal flower (Bloom)
+// Brand mark: hand-drawn star (Doodle), four-point sparkle (Seashell) or five-petal flower (Bloom)
 export function Star({ size = 24, color = 'currentColor', className = '' }) {
   const { theme } = useTheme()
   const maskId = useId()
+  if (theme === 'doodle') return <HandIcon name="icon-star.png" size={size} color={color} className={className} />
   if (theme === 'bloom') {
     return (
       <svg className={className} width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
@@ -111,24 +112,39 @@ export function CheckBox({ on, onClick, label, decorative = false }) {
   )
 }
 
+// One of Annie's line drawings, tinted with `color` (defaults to the surrounding text color).
+// Other themes fall back to the matching Lucide icon.
+export function HandIcon({ name, size = 22, color, className = '', fallback: Fallback }) {
+  const { theme } = useTheme()
+  if (theme !== 'doodle' && Fallback) return <Fallback size={size} className={className} />
+  const url = `url(${asset(name)})`
+  return (
+    <span
+      className={`hand-icon ${className}`}
+      aria-hidden="true"
+      style={{ width: size, height: size, color, WebkitMaskImage: url, maskImage: url }}
+    />
+  )
+}
+
 export function TabBar() {
   const nav = useNavigate()
   const { s, beginPlanSession } = useStore()
-  const tab = (to, Icon, label) => (
+  const tab = (to, Icon, label, drawing) => (
     <NavLink to={to} end={to === '/'} className={({ isActive }) => `tab ${isActive ? 'active' : ''}`}>
-      <Icon size={24} strokeWidth={2} />
+      <HandIcon name={drawing} size={26} fallback={Icon} />
       <span>{label}</span>
     </NavLink>
   )
   return (
     <nav className="tabbar" aria-label="Main">
-      {tab('/', House, 'Home')}
-      {tab('/projects', BookOpen, 'Projects')}
+      {tab('/', House, 'Home', 'nav-home.png')}
+      {tab('/projects', BookOpen, 'Projects', 'nav-projects.png')}
       <button className="tab-center" aria-label="Start a session" onClick={() => { if (s.plan) { beginPlanSession(); nav('/start/1') } else nav('/plan/1') }}>
         <Star size={34} color="var(--wheat)" />
       </button>
-      {tab('/friends', Users, 'Friends')}
-      {tab('/profile', UserRound, 'Profile')}
+      {tab('/friends', Users, 'Friends', 'nav-friends.png')}
+      {tab('/profile', UserRound, 'Profile', 'nav-profile.png')}
     </nav>
   )
 }

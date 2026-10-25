@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ChevronRight, Clock, Flame, History, Palette, Radio, RotateCcw } from 'lucide-react'
 import { useStore } from '../store'
 import { fmt } from '../data'
-import { Avatar, Screen, Sheet, Star, TopBar } from '../components/ui'
+import { Avatar, Screen, Sheet, Star, TopBar, HandIcon } from '../components/ui'
 
 const COLORS = ['#3E4B8E', '#3D1534', '#A6BCC9', '#F6E0B6', '#7A5C8E', '#B08A4A']
 
@@ -36,17 +36,17 @@ export function Profile() {
       </section>
       <div className="grid-2">
         <div className="card stat-lg wheat">
-          <Flame size={20} />
+          <HandIcon name="icon-flame.png" size={24} fallback={Flame} />
           <b>{p.streak} days</b><span>Current streak</span>
         </div>
         <div className="card stat-lg powder">
-          <Clock size={20} />
+          <HandIcon name="icon-clock.png" size={24} fallback={Clock} />
           <b>{fmt(Math.round(s.todayMins))}</b><span>Studied today</span>
         </div>
       </div>
 
       <section className="card list menu">
-        <Link to="/history" className="menu-row"><History size={20} /><span className="grow">Session history</span><ChevronRight size={18} /></Link>
+        <Link to="/history" className="menu-row"><HandIcon name="icon-clock.png" size={22} fallback={History} /><span className="grow">Session history</span><ChevronRight size={18} /></Link>
         <Link to="/dock" className="menu-row"><Radio size={20} /><span className="grow">Dock setup</span><ChevronRight size={18} /></Link>
         {SHOW_PALETTE_SWITCH && (
           <button className="menu-row" onClick={() => setTheme(THEMES[(THEMES.findIndex((t) => t.id === theme) + 1) % THEMES.length].id)}>

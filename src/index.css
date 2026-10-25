@@ -899,3 +899,13 @@ input { font: inherit; color: inherit; }
 .center-self { align-self: center; }
 
 .stage.no-switch { padding-top: 24px; }
+
+/* Hand-drawn line icons (tab bar, streak flame, star) tinted via mask */
+.hand-icon {
+  display: inline-block; flex: none; vertical-align: middle; background-color: currentColor;
+  -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+}
+[data-theme="doodle"] .done-screen .spin-in { color: var(--blue) !important; filter: drop-shadow(3px 4px 0 rgba(74, 46, 58, .2)); }
+[data-theme="doodle"] .tab-center .hand-icon { transition: transform .5s; }
+[data-theme="doodle"] .tab-center:hover .hand-icon { transform: rotate(-12deg) scale(1.06); }

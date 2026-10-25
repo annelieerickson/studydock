@@ -3,7 +3,7 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Flame, Gauge, Hand, LogOut, Pause, Play, Square } from 'lucide-react'
 import { useStore } from '../store'
 import { TIMING, fmt } from '../data'
-import { CheckBox, CloseButton, Screen, Sheet, Star } from '../components/ui'
+import { CheckBox, CloseButton, Screen, Sheet, Star, HandIcon } from '../components/ui'
 import { useStatusTone } from '../components/PhoneFrame'
 
 export function DockInstructions() {
@@ -247,7 +247,7 @@ export function SessionDone() {
       </div>
       <div className="grid-2">
         <div className="card stat"><b>{fmt(total)}</b><span>Focused</span></div>
-        <div className="card stat"><b className="stat-icon"><Flame size={16} />{s.profile.streak + (s.sessionDoneToday ? 0 : 1)}</b><span>Day streak</span></div>
+        <div className="card stat"><b className="stat-icon"><HandIcon name="icon-flame.png" size={20} fallback={Flame} />{s.profile.streak + (s.sessionDoneToday ? 0 : 1)}</b><span>Day streak</span></div>
       </div>
       <h3 className="section-title">What did you finish?</h3>
       <section className="card list">

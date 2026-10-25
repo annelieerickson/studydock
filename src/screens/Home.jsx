@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ChevronDown, ChevronRight, Flame, Pause, Pencil, Play, Radio } from 'lucide-react'
 import { useStore } from '../store'
 import { fmt } from '../data'
-import { Avatar, CheckCircle, Doodle, DueBadge, Screen, Star } from '../components/ui'
+import { Avatar, CheckCircle, Doodle, DueBadge, Screen, Star, HandIcon } from '../components/ui'
 
 const DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
@@ -52,7 +52,7 @@ export default function Home() {
 
       <section className="card streak-card">
         <div className="streak-head">
-          <span className="streak-icon"><Flame size={22} /></span>
+          <span className="streak-icon"><HandIcon name="icon-flame.png" size={26} fallback={Flame} /></span>
           <div>
             <div className="big-num">{s.profile.streak} days</div>
             <div className="muted sm">Current streak</div>
