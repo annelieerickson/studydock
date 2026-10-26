@@ -909,3 +909,20 @@ input { font: inherit; color: inherit; }
 [data-theme="doodle"] .done-screen .spin-in { color: var(--blue) !important; filter: drop-shadow(3px 4px 0 rgba(74, 46, 58, .2)); }
 [data-theme="doodle"] .tab-center .hand-icon { transition: transform .5s; }
 [data-theme="doodle"] .tab-center:hover .hand-icon { transform: rotate(-12deg) scale(1.06); }
+
+/* ---------- Dock instructions (light, hand-drawn) ---------- */
+.dock-screen .dock-title { margin-top: 28px; }
+.dock-drawing { width: 78%; aspect-ratio: 1; margin: -18px auto -30px; color: var(--violet); flex: none; transition: transform .4s; }
+.dock-drawing.docked { animation: dock-wiggle .6s ease 2; }
+@keyframes dock-wiggle { 25% { transform: rotate(-2deg) translateY(-3px); } 75% { transform: rotate(2deg) translateY(-3px); } }
+.dock-list { list-style: none; margin: 0; padding: 0 4px; display: flex; flex-direction: column; gap: 12px; }
+.dock-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 19px; line-height: 1.3; }
+.dock-list .num {
+  width: 28px; height: 28px; flex: none; display: grid; place-items: center; margin-top: -1px;
+  border: 2px solid var(--violet); border-radius: 50%; font-size: 15px; font-weight: 800;
+}
+[data-theme="doodle"] .dock-list li { font-family: var(--font-display); font-size: 23px; }
+[data-theme="doodle"] .dock-list .num { font-family: var(--font); border-radius: 48% 52% 46% 54% / 54% 46% 52% 48%; }
+.dock-note { display: flex; align-items: flex-start; gap: 8px; margin: 6px 0 0; padding: 0 4px; color: var(--ink-2); font-size: 15px; }
+.dock-note .hand-icon, .dock-note svg { margin-top: 2px; }
+.dock-screen .flow-foot { margin-top: auto; }

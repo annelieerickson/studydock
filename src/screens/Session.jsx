@@ -3,14 +3,13 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Flame, Gauge, Hand, LogOut, Pause, Play, Square } from 'lucide-react'
 import { useStore } from '../store'
 import { TIMING, fmt } from '../data'
-import { CheckBox, CloseButton, Screen, Sheet, Star, HandIcon } from '../components/ui'
+import { CheckBox, CloseButton, Doodle, Screen, Sheet, Star, HandIcon } from '../components/ui'
 import { useStatusTone } from '../components/PhoneFrame'
 
 export function DockInstructions() {
   const { s } = useStore()
   const nav = useNavigate()
   const [docking, setDocking] = useState(false)
-  useStatusTone('light')
 
   useEffect(() => {
     if (!docking) return
@@ -20,35 +19,35 @@ export function DockInstructions() {
 
   if (!s.session) {
     return (
-      <Screen className="dark-screen">
+      <Screen className="flow">
         <div className="steps-head"><CloseButton onClick={() => nav('/')} /></div>
         <div className="dock-empty">
           <h1 className="flow-title">No session set up</h1>
           <p>Pick what you’re working on first so StudyDock can time it.</p>
-          <button className="btn btn-wheat" onClick={() => nav('/plan/1')}>Set up a session</button>
+          <button className="btn btn-primary" onClick={() => nav('/plan/1')}>Set up a session</button>
         </div>
       </Screen>
     )
   }
 
   return (
-    <Screen className="dark-screen">
+    <Screen className="flow dock-screen">
       <div className="steps-head"><CloseButton onClick={() => nav(-1)} /></div>
-      <div className="dock-art">
-        <div className={`dock-phone ${docking ? 'docking' : ''}`}><Star size={26} color="var(--wheat)" /></div>
-        <div className="dock-base"><span className={docking ? 'lit' : ''} /></div>
-      </div>
-      <h1 className="flow-title light center">{docking ? 'Docked. Focus mode on.' : 'Place your phone in the dock'}</h1>
-      <ol className="dock-steps">
-        <li><b>1</b>Set your phone face down on <em>{s.dock.name}</em>.</li>
-        <li><b>2</b>The light turns on and your timer starts.</li>
-        <li><b>3</b>{s.dock.lock === 'strict' ? 'Lifting the phone ends the session early.' : 'Lifting the phone pauses the timer.'}</li>
+      <h1 className="flow-title dock-title">{docking ? 'Docked! Starting your session…' : 'Place your phone in the dock'}</h1>
+      <Doodle src="dock.png" className={`dock-drawing ${docking ? 'docked' : ''}`} label="The StudyDock phone dock" />
+      <ol className="dock-list">
+        <li><span className="num">1</span>Assemble the dock.</li>
+        <li><span className="num">2</span>Place phone inside.</li>
+        <li><span className="num">3</span>Your session automatically starts.</li>
       </ol>
+      <p className="dock-note">
+        <Star size={16} color="var(--violet)" />
+        <span>Removing the phone {s.dock.lock === 'strict' ? 'ends' : 'pauses'} the current session.</span>
+      </p>
       <div className="flow-foot">
-        <button className="btn btn-wheat" disabled={docking} onClick={() => setDocking(true)}>
+        <button className="btn btn-primary" disabled={docking} onClick={() => setDocking(true)}>
           {docking ? 'Starting…' : 'Simulate docking phone'}
         </button>
-        <p className="hint">In the real app this happens automatically when the dock detects your phone.</p>
       </div>
     </Screen>
   )
