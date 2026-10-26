@@ -32,6 +32,8 @@ function initialState() {
     // The session about to start / running: projects, tasks, timing, blocks
     session: null,
     paused: false,
+    // Which finished plan already got its confetti, so it plays once per completion
+    celebrated: null,
     // Session setup draft (used by both session flows)
     draft: { projects: ['ps7', 'p1b'], tasks: null, timing: 'pomodoro', blocks: 4, setLength: 60 },
   }
@@ -128,6 +130,7 @@ export function StoreProvider({ children }) {
         d.paused = true
       }),
       resumeSession: () => update((d) => { d.paused = false }),
+      markCelebrated: (sig) => update((d) => { d.celebrated = sig }),
       finishSession: ({ mins, label, mode, doneTasks }) => update((d) => {
         const m = Math.max(0, Math.round(mins))
         d.todayMins += m

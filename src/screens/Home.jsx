@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ChevronDown, ChevronRight, Flame, Pause, Pencil, Play, Radio } from 'lucide-react'
 import { useStore } from '../store'
+import Confetti from '../components/Confetti'
 import { fmt } from '../data'
 import { Avatar, CheckCircle, Doodle, DueBadge, Screen, Star, HandIcon } from '../components/ui'
 
@@ -28,7 +29,17 @@ export function WeekStreak({ done }) {
 }
 
 export default function Home() {
-  const { s, findTask } = useStore()
+  const { s, findTask, markCelebrated } = useStore()
+  const [burst, setBurst] = useState(false)
+
+  // Confetti once, the first time every task in today's plan is checked off
+  const planTasks = s.plan ? s.plan.tasks.map((id) => findTask(s, id)).filter(Boolean) : []
+  const allDone = planTasks.length > 0 && planTasks.every((x) => x.t.done)
+  const sig = s.plan ? s.plan.tasks.join('|') : null
+  useEffect(() => {
+    if (allDone && s.celebrated !== sig) { setBurst(true); markCelebrated(sig) }
+    if (!allDone && s.celebrated) markCelebrated(null)
+  }, [allDone, sig, s.celebrated, markCelebrated])
   const date = new Date().toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })
   const studying = s.friends.filter((f) => f.studying)
 
@@ -38,6 +49,7 @@ export default function Home() {
 
   return (
     <Screen tabs>
+      {burst && <Confetti onDone={() => setBurst(false)} />}
       <header className="home-head">
         <div>
           <p className="eyebrow-date">{date}</p>
@@ -132,7 +144,13 @@ function TodayCard() {
         <b>{doneCount}/{tasks.length} Tasks</b>
       </div>
       <div className="inner-card list">
-        {open.length === 0 && !expanded && <div className="row-sub center pad">All planned tasks done. Nice work!</div>}
+        {open.length === 0 && !expanded && (
+          <div className="all-done">
+            <Star size={30} color="var(--blue)" />
+            <b>All done for today!</b>
+            <span className="row-sub">You finished every task in your plan.</span>
+          </div>
+        )}
         {shown.map(({ t, p }) => (
           <div className="task-row divided" key={t.id}>
             <div className="grow">
@@ -145,7 +163,7 @@ function TodayCard() {
         ))}
         {(hiddenCount > 0 || expanded) && (
           <button className="task-row divided more-row" onClick={() => setExpanded((v) => !v)} aria-expanded={expanded}>
-            <span className="grow">{expanded ? 'Show less' : `And ${hiddenCount} more…`}</span>
+            <span className="grow">{expanded ? 'Show less' : open.length === 0 ? `Show ${done.length} finished task${done.length > 1 ? 's' : ''}` : `And ${hiddenCount} more…`}</span>
             <ChevronDown size={18} className={expanded ? 'flip' : ''} />
           </button>
         )}
