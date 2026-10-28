@@ -5,7 +5,7 @@ import { StoreProvider } from './store'
 import { ThemeProvider } from './theme'
 import Home from './screens/Home'
 import { ProjectsList, SubjectDetail, ProjectDetail } from './screens/Projects'
-import Planner, { CreatePlan, PlanSession } from './screens/Planner'
+import { CreatePlan, PlanSession } from './screens/Planner'
 import { DockInstructions, ActiveSession, SessionDone } from './screens/Session'
 import { FriendsList, AddFriends } from './screens/Friends'
 import { Profile, SessionHistory } from './screens/Profile'
@@ -37,7 +37,6 @@ export default function App() {
             </Route>
             <Route path="/projects/:id" element={<SubjectDetail />} />
             <Route path="/projects/:id/:pid" element={<ProjectDetail />} />
-            <Route path="/plan/:step" element={<Planner />} />
             <Route path="/create/:step" element={<CreatePlan />} />
             <Route path="/start/:step" element={<PlanSession />} />
             <Route path="/session/dock" element={<DockInstructions />} />

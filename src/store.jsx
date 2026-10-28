@@ -34,8 +34,8 @@ function initialState() {
     paused: false,
     // Which finished plan already got its confetti, so it plays once per completion
     celebrated: null,
-    // Session setup draft (used by both session flows)
-    draft: { projects: ['ps7', 'p1b'], tasks: null, timing: 'pomodoro', blocks: 4, setLength: 60 },
+    // Session setup draft: tasks picked from today's plan, plus timing
+    draft: { tasks: null, timing: 'pomodoro', blocks: 4, setLength: 60, shareLocation: false, location: 'Parks Library' },
   }
 }
 
@@ -99,17 +99,12 @@ export function StoreProvider({ children }) {
         d.draft.tasks = []
         d.draft.timing = d.dock.timing === 'open' ? 'open' : d.dock.timing
       }),
-      toggleDraftProject: (id) => update((d) => {
-        const list = d.draft.projects
-        d.draft.projects = list.includes(id) ? list.filter((x) => x !== id) : [...list, id]
-        d.draft.tasks = null // re-derive tasks from the new project list
-      }),
       setDock: (patch) => update((d) => { Object.assign(d.dock, patch) }),
       setProfile: (patch) => update((d) => { Object.assign(d.profile, patch) }),
       acceptRequest: (id) => update((d) => {
         const r = d.requests.find((x) => x.id === id)
         d.requests = d.requests.filter((x) => x.id !== id)
-        if (r) d.friends.push({ id: r.id, name: r.name, studying: false, last: 'Just added', color: r.color, weekMins: 0 })
+        if (r) d.friends.push({ id: r.id, name: r.name, studying: false, last: 'Just added', color: r.color, weekMins: 0, weekTasks: 0, bestFinishMins: null })
       }),
       declineRequest: (id) => update((d) => { d.requests = d.requests.filter((x) => x.id !== id) }),
       cancelSent: (id) => update((d) => { d.sent = d.sent.filter((x) => x.id !== id) }),

@@ -1,6 +1,5 @@
 import { useId } from 'react'
 import { paint, LIGHT_COLORS, useTheme } from '../theme'
-import { useStore } from '../store'
 import { asset, fmtDue, urgency } from '../data'
 import { createPortal } from 'react-dom'
 import { NavLink, useNavigate } from 'react-router-dom'
@@ -127,9 +126,8 @@ export function HandIcon({ name, size = 22, color, className = '', fallback: Fal
   )
 }
 
+// Bottom navigation. Sessions are started from the dashboard, so there's no center button.
 export function TabBar() {
-  const nav = useNavigate()
-  const { s, beginPlanSession } = useStore()
   const tab = (to, Icon, label, drawing) => (
     <NavLink to={to} end={to === '/'} className={({ isActive }) => `tab ${isActive ? 'active' : ''}`}>
       <HandIcon name={drawing} size={26} fallback={Icon} />
@@ -140,9 +138,6 @@ export function TabBar() {
     <nav className="tabbar" aria-label="Main">
       {tab('/', House, 'Home', 'nav-home.png')}
       {tab('/projects', BookOpen, 'Projects', 'nav-projects.png')}
-      <button className="tab-center" aria-label="Start a session" onClick={() => { if (s.plan) { beginPlanSession(); nav('/start/1') } else nav('/plan/1') }}>
-        <Star size={34} color="var(--wheat)" />
-      </button>
       {tab('/friends', Users, 'Friends', 'nav-friends.png')}
       {tab('/profile', UserRound, 'Profile', 'nav-profile.png')}
     </nav>

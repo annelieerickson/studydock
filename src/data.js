@@ -181,18 +181,23 @@ export const SUBJECTS = [
   },
 ]
 
+// location: where a studying friend chose to share they're working (null = not shared)
+// weekTasks: tasks completed this week; bestFinishMins: fastest time to finish a whole day's plan this week
 export const FRIENDS = [
-  { id: 'oliver', name: 'Oliver', img: 'avatar-oliver.png', studying: true, subject: 'COMS', mins: 42, color: '#3E4B8E', weekMins: 612 },
-  { id: 'max', name: 'Max', img: 'avatar-max.png', studying: true, subject: 'Essay', mins: 70, color: '#A6BCC9', weekMins: 488 },
-  { id: 'marge', name: 'Marge', img: 'avatar-marge.png', studying: true, subject: 'Agronomy', mins: 18, color: '#F6E0B6', weekMins: 395 },
-  { id: 'wes', name: 'Wes', studying: false, last: 'Last studied yesterday', color: '#7A5C8E', weekMins: 260 },
-  { id: 'bram', name: 'Bram', studying: false, last: 'Last studied 3 days ago', color: '#B08A4A', weekMins: 95 },
+  { id: 'oliver', name: 'Oliver', img: 'avatar-oliver.png', studying: true, subject: 'COMS', mins: 42, location: 'Parks Library', color: '#3E4B8E', weekMins: 612, weekTasks: 18, bestFinishMins: 155 },
+  { id: 'max', name: 'Max', img: 'avatar-max.png', studying: true, subject: 'Essay', mins: 70, location: 'Memorial Union', color: '#A6BCC9', weekMins: 488, weekTasks: 22, bestFinishMins: 130 },
+  { id: 'marge', name: 'Marge', img: 'avatar-marge.png', studying: true, subject: 'Agronomy', mins: 18, location: null, color: '#F6E0B6', weekMins: 395, weekTasks: 14, bestFinishMins: 95 },
+  { id: 'wes', name: 'Wes', studying: false, last: 'Last studied yesterday', color: '#7A5C8E', weekMins: 260, weekTasks: 9, bestFinishMins: 210 },
+  { id: 'bram', name: 'Bram', studying: false, last: 'Last studied 3 days ago', color: '#B08A4A', weekMins: 95, weekTasks: 3, bestFinishMins: null },
 ]
 
+// Places offered when sharing where you're working
+export const STUDY_SPOTS = ['Parks Library', 'Memorial Union', 'Student Innovation Center', 'Coffee shop', 'Home']
+
 export const REQUESTS = [
-  { id: 'r-priya', name: 'Priya', handle: '@priyacodes', color: '#5D8AA8' },
-  { id: 'r-theo', name: 'Theo', handle: '@theo.reads', color: '#3D1534' },
-  { id: 'r-june', name: 'June', handle: '@junebug', color: '#B08A4A' },
+  { id: 'r-priya', name: 'Natasha', handle: '@nat4real', color: '#5D8AA8' },
+  { id: 'r-theo', name: 'Makenna', handle: '@mjolley', color: '#3D1534' },
+  { id: 'r-june', name: 'Sasha', handle: '@s.plaist', color: '#B08A4A' },
 ]
 
 export const SENT = [{ id: 's-varsha', name: 'Varsha', note: 'Pending, sent 2 days ago', color: '#7A5C8E' }]

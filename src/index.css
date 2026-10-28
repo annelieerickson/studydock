@@ -259,7 +259,7 @@ input { font: inherit; color: inherit; }
 /* Tab bar */
 .tabbar {
   position: absolute; left: 12px; right: 12px; bottom: 22px; height: 68px; z-index: 30;
-  display: grid; grid-template-columns: 1fr 1fr 84px 1fr 1fr; align-items: center;
+  display: grid; grid-template-columns: repeat(4, 1fr); align-items: center;
   background: rgba(255, 255, 255, .86); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   border-radius: 28px; box-shadow: 0 8px 28px rgba(61, 21, 52, .16);
 }
@@ -947,3 +947,27 @@ input { font: inherit; color: inherit; }
 .all-done { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 6px; text-align: center; }
 .all-done b { font-size: 17px; }
 [data-theme="doodle"] .all-done b { font-family: var(--font-display); font-weight: 400; font-size: 24px; }
+
+/* Full-width "Friends studying now" card on the dashboard */
+.friends-wide .stack-row { gap: 14px; }
+.friends-wide .avatar-stack .avatar.has-img { margin-left: -12px; }
+.friends-wide .avatar-stack .avatar.has-img:first-child { margin-left: 0; }
+.friends-wide .sm { font-size: 15px; }
+.friends-wide .xs { font-size: 13px; margin-top: 2px; }
+
+/* ---------- Social: study locations and leaderboard categories ---------- */
+.row-place { display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--blue); font-weight: 600; margin-top: 2px; }
+.share-note { display: flex; align-items: center; justify-content: center; gap: 5px; margin: -4px 0 0; font-size: 12.5px; color: rgba(255, 244, 235, .7); }
+.share-row { display: flex; flex-direction: column; gap: 8px; padding: 2px 4px; }
+.share-check { position: relative; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.share-check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.share-check .check-box { width: 24px; height: 24px; }
+.share-check input:focus-visible + .check-box { outline: 2px solid var(--blue); outline-offset: 2px; }
+.share-place { display: flex; align-items: center; gap: 6px; margin-left: 34px; color: var(--blue); font-size: 13px; }
+.share-place select {
+  font: inherit; font-weight: 600; color: var(--ink); background: var(--card); padding: 6px 10px;
+  border: 1.5px solid rgba(74, 46, 58, .4); border-radius: 10px 13px 9px 12px;
+}
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.metric-switch .segmented button { font-size: 12.5px; height: 34px; }
+.podium-value { font-size: 12px; font-weight: 700; color: var(--ink-2); }

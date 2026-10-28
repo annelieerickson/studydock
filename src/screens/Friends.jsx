@@ -1,19 +1,47 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronRight, Search, Trophy, UserPlus } from 'lucide-react'
+import { ChevronRight, MapPin, Search, Trophy, UserPlus } from 'lucide-react'
 import { useStore } from '../store'
 import { fmt } from '../data'
 import { Avatar, Screen, Segmented, Toast, TopBar } from '../components/ui'
 
+// Leaderboard categories. Fastest finish ranks lowest time first; people without one go last.
+const METRICS = {
+  hours: { label: 'Hours studied', note: 'Time focused this week. Resets Monday.', get: (f) => f.weekMins, show: (v) => fmt(v) },
+  tasks: { label: 'Tasks done', note: 'Tasks checked off this week.', get: (f) => f.weekTasks, show: (v) => `${v} task${v === 1 ? '' : 's'}` },
+  fastest: { label: 'Fastest finish', note: 'Quickest time to finish a whole day’s plan this week.', get: (f) => f.bestFinishMins, show: (v) => (v == null ? '—' : fmt(v)), asc: true },
+}
+
+function rank(people, metric) {
+  const m = METRICS[metric]
+  return [...people].sort((a, b) => {
+    const x = m.get(a), y = m.get(b)
+    if (x == null) return 1
+    if (y == null) return -1
+    return m.asc ? x - y : y - x
+  })
+}
+
 export function FriendsList() {
-  const { s } = useStore()
+  const { s, findTask } = useStore()
   const [tab, setTab] = useState('friends')
+  const [metric, setMetric] = useState('hours')
   const studying = s.friends.filter((f) => f.studying)
   const idle = s.friends.filter((f) => !f.studying)
   const n = s.requests.length
 
-  const me = { id: 'me', name: s.profile.first + ' (you)', color: s.profile.color, img: s.profile.img, weekMins: 520 + s.todayMins, me: true }
-  const board = [...s.friends, me].sort((a, b) => b.weekMins - a.weekMins)
+  // Your own row: base week stats plus what you've done in this prototype today
+  const planTasks = s.plan ? s.plan.tasks.map((id) => findTask(s, id)).filter(Boolean) : []
+  const doneToday = planTasks.filter((x) => x.t.done).length
+  const finishedPlan = planTasks.length > 0 && doneToday === planTasks.length && s.todayMins > 0
+  const me = {
+    id: 'me', name: s.profile.first + ' (you)', color: s.profile.color, img: s.profile.img, me: true,
+    weekMins: 520 + s.todayMins,
+    weekTasks: 16 + doneToday,
+    bestFinishMins: finishedPlan ? Math.min(170, Math.round(s.todayMins)) : 170,
+  }
+  const m = METRICS[metric]
+  const board = rank([...s.friends, me], metric)
 
   return (
     <Screen tabs>
@@ -40,6 +68,7 @@ export function FriendsList() {
                 <div className="grow">
                   <div className="row-title sm">{f.name}</div>
                   <div className="row-sub">{f.subject} · {fmt(f.mins)}</div>
+                  {f.location && <div className="row-place"><MapPin size={12} /> {f.location}</div>}
                 </div>
                 <span className="pill powder xs">Focusing</span>
               </div>
@@ -60,7 +89,14 @@ export function FriendsList() {
         </>
       ) : (
         <>
-          <p className="muted sm">Hours studied this week. Resets Monday.</p>
+          <div className="metric-switch">
+            <Segmented
+              value={metric}
+              onChange={setMetric}
+              options={Object.entries(METRICS).map(([value, x]) => ({ value, label: x.label }))}
+            />
+          </div>
+          <p className="muted sm">{m.note}</p>
           <div className="podium">
             {[board[1], board[0], board[2]].filter(Boolean).map((f) => {
               const place = board.indexOf(f) + 1
@@ -68,6 +104,7 @@ export function FriendsList() {
                 <div key={f.id} className={`podium-spot p${place}`}>
                   <Avatar name={f.name.replace(' (you)', '')} color={f.color} img={f.img} size={place === 1 ? 64 : 52} />
                   <span className="sm"><b>{f.name}</b></span>
+                  <span className="podium-value">{m.show(m.get(f))}</span>
                   <span className="podium-block">{place === 1 ? <Trophy size={18} /> : place}</span>
                 </div>
               )
@@ -79,7 +116,7 @@ export function FriendsList() {
                 <span className="rank">{i + 1}</span>
                 <Avatar name={f.name.replace(' (you)', '')} color={f.color} img={f.img} size={40} />
                 <span className="grow row-title sm">{f.name}</span>
-                <span className="row-time">{fmt(f.weekMins)}</span>
+                <span className="row-time">{m.show(m.get(f))}</span>
               </div>
             ))}
           </section>

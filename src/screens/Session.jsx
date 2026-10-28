@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { Flame, Gauge, Hand, LogOut, Pause, Play, Square } from 'lucide-react'
+import { Flame, Gauge, Hand, LogOut, MapPin, Pause, Play, Square } from 'lucide-react'
 import { useStore } from '../store'
 import { TIMING, fmt } from '../data'
 import { CheckBox, CloseButton, Doodle, Screen, Sheet, Star, HandIcon } from '../components/ui'
@@ -23,8 +23,8 @@ export function DockInstructions() {
         <div className="steps-head"><CloseButton onClick={() => nav('/')} /></div>
         <div className="dock-empty">
           <h1 className="flow-title">No session set up</h1>
-          <p>Pick what you’re working on first so StudyDock can time it.</p>
-          <button className="btn btn-primary" onClick={() => nav('/plan/1')}>Set up a session</button>
+          <p>Start a session from your plan on the dashboard.</p>
+          <button className="btn btn-primary" onClick={() => nav('/')}>Back to dashboard</button>
         </div>
       </Screen>
     )
@@ -137,6 +137,7 @@ export function ActiveSession() {
         </button>
       </div>
 
+      {plan.location && <p className="share-note"><MapPin size={13} /> Friends can see you’re at {plan.location}</p>}
       {paused && <p className="paused-note">Paused. Resume when you’re ready, or leave and pick it up later.</p>}
       <p className="phase">
         {open ? 'Open session' : isBreak ? 'Break time. Stretch, sip water.' : `Focus ${focusIdx} of ${focusTotal}`}

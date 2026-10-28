@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { Minus, Plus, Undo2 } from 'lucide-react'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { MapPin, Minus, Plus, Undo2 } from 'lucide-react'
 import { useStore, sessionLength, buildBlocks } from '../store'
-import { TIMING, fmt } from '../data'
+import { STUDY_SPOTS, TIMING, fmt } from '../data'
 import { CheckBox, ClassIcon, CloseButton, DueBadge, Screen } from '../components/ui'
 
 /* ---------- Shared pieces ---------- */
@@ -181,7 +181,7 @@ function TimingStep({ step, total, next }) {
 }
 
 function ReviewStep({ step, total, projects, tasks, edit }) {
-  const { s, startSession } = useStore()
+  const { s, startSession, setDraft } = useStore()
   const nav = useNavigate()
   const len = sessionLength(s.draft)
   const t = TIMING[s.draft.timing]
@@ -218,6 +218,28 @@ function ReviewStep({ step, total, projects, tasks, edit }) {
             <div className="review-line"><b>{s.dock.name} · {s.dock.lock === 'strict' ? 'Strict' : 'Gentle'} lock</b></div>
           </div>
         </section>
+
+        {/* Off by default: location is only shared when the student opts in */}
+        <div className="share-row">
+          <label className="share-check">
+            <input
+              type="checkbox"
+              checked={s.draft.shareLocation}
+              onChange={(e) => setDraft({ shareLocation: e.target.checked })}
+            />
+            <CheckBox on={s.draft.shareLocation} decorative />
+            <span>Show friends where you’re working</span>
+          </label>
+          {s.draft.shareLocation && (
+            <label className="share-place">
+              <MapPin size={14} />
+              <span className="sr-only">Study location</span>
+              <select value={s.draft.location} onChange={(e) => setDraft({ location: e.target.value })}>
+                {STUDY_SPOTS.map((spot) => <option key={spot} value={spot}>{spot}</option>)}
+              </select>
+            </label>
+          )}
+        </div>
       </div>
       <div className="flow-foot">
         <button
@@ -229,6 +251,7 @@ function ReviewStep({ step, total, projects, tasks, edit }) {
               tasks: tasks.map((x) => x.t.id),
               timing: s.draft.timing,
               blocks: buildBlocks(s.draft),
+              location: s.draft.shareLocation ? s.draft.location : null,
             })
             nav('/session/dock')
           }}
@@ -238,83 +261,7 @@ function ReviewStep({ step, total, projects, tasks, edit }) {
   )
 }
 
-/* ---------- Flow A: no plan yet → original 4-step session setup ---------- */
-
-export default function Planner() {
-  const { step } = useParams()
-  const n = Number(step)
-  const { s, allProjects, findTask } = useStore()
-  const projects = allProjects(s).filter((p) => s.draft.projects.includes(p.id))
-  // Tasks start unchecked; the student opts in to each one
-  const selected = s.draft.tasks ?? []
-
-  if (n === 1) return <QuickProjects />
-  if (n === 2) return <QuickTasks projects={projects} selected={selected} />
-  if (n === 3) return <TimingStep step={3} total={4} next="/plan/4" />
-  const tasks = selected.map((id) => findTask(s, id)).filter((x) => x && projects.some((p) => p.id === x.p.id))
-  return (
-    <ReviewStep
-      step={4} total={4}
-      projects={projects.filter((p) => tasks.some((x) => x.p.id === p.id))}
-      tasks={tasks}
-      edit={{ projects: '/plan/1', tasks: '/plan/2', timing: '/plan/3' }}
-    />
-  )
-}
-
-function QuickProjects() {
-  const { s, toggleDraftProject } = useStore()
-  const nav = useNavigate()
-  const count = s.draft.projects.length
-  return (
-    <Screen className="flow">
-      <Steps step={1} total={4} />
-      <h1 className="flow-title">What are you working on?</h1>
-      <p className="muted sm">Pick one or more projects for this session.</p>
-      <div className="flow-body">
-        <ProjectSelect selected={s.draft.projects} onToggle={toggleDraftProject} />
-      </div>
-      <div className="flow-foot">
-        <button className="btn btn-primary" disabled={!count} onClick={() => nav('/plan/2')}>
-          {count ? `Continue with ${count} project${count > 1 ? 's' : ''}` : 'Pick a project'}
-        </button>
-      </div>
-    </Screen>
-  )
-}
-
-function QuickTasks({ projects, selected }) {
-  const { s, setDraft } = useStore()
-  const nav = useNavigate()
-  const toggle = (id) => setDraft({ tasks: selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id] })
-  const chosen = projects.flatMap((p) => p.tasks).filter((t) => selected.includes(t.id))
-  const sum = workSummary(chosen)
-  return (
-    <Screen className="flow">
-      <Steps step={2} total={4} />
-      <h1 className="flow-title">Set today’s tasks</h1>
-      <p className="muted sm">Keep it realistic. Swipe a task left to save it for later.</p>
-      <div className="flow-body">
-        <TaskSelect
-          swipe
-          groups={projects.map((p) => ({ project: p, tasks: p.tasks.filter((t) => !t.done) }))}
-          selected={selected}
-          onToggle={toggle}
-        />
-      </div>
-      <div className="flow-foot">
-        <p className="center sm">{sum.text}</p>
-        <button
-          className="btn btn-primary"
-          disabled={!chosen.length}
-          onClick={() => { setDraft({ tasks: selected, ...timingFor(s.draft, sum.mins) }); nav('/plan/3') }}
-        >Continue</button>
-      </div>
-    </Screen>
-  )
-}
-
-/* ---------- Flow B: create (or edit) today's plan ---------- */
+/* ---------- Create (or edit) today's plan ---------- */
 
 export function CreatePlan() {
   const { step } = useParams()
@@ -387,13 +334,14 @@ function PlanTasks() {
   )
 }
 
-/* ---------- Flow C: start a session from today's plan ---------- */
+/* ---------- Start a session from today's plan ---------- */
 
 export function PlanSession() {
   const { step } = useParams()
   const n = Number(step)
   const { s, allProjects, findTask } = useStore()
-  if (!s.plan) return <Planner />
+  // Sessions always start from a plan; without one, send the student to the dashboard
+  if (!s.plan) return <Navigate to="/" replace />
 
   // Group the plan's open tasks under their projects
   const planTasks = s.plan.tasks.map((id) => findTask(s, id)).filter((x) => x && !x.t.done)

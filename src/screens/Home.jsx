@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChevronDown, ChevronRight, Flame, Pause, Pencil, Play, Radio } from 'lucide-react'
+import { ChevronDown, ChevronRight, Flame, Pause, Pencil, Play } from 'lucide-react'
 import { useStore } from '../store'
 import Confetti from '../components/Confetti'
 import { fmt } from '../data'
 import { Avatar, CheckCircle, Doodle, DueBadge, Screen, Star, HandIcon } from '../components/ui'
 
 const DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+
+// "Oliver", "Oliver and Max", "Oliver, Max and Marge"
+function listNames(names) {
+  if (names.length <= 1) return names[0] ?? ''
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
+}
 
 export function WeekStreak({ done }) {
   // index of today with Monday = 0
@@ -74,25 +80,22 @@ export default function Home() {
         <WeekStreak done={s.sessionDoneToday} />
       </section>
 
-      <div className="grid-2">
-        <Link to="/friends" className="card mini-card">
-          <div className="mini-head"><span>Friends</span><span className="chip">See all</span></div>
+      <Link to="/friends" className="card mini-card friends-wide">
+        <div className="mini-head"><span>Friends studying now</span><span className="chip">See all</span></div>
+        {studying.length ? (
           <div className="stack-row">
             <div className="avatar-stack">
-              {studying.slice(0, 3).map((f) => <Avatar key={f.id} name={f.name} color={f.color} img={f.img} size={34} />)}
+              {studying.slice(0, 4).map((f) => <Avatar key={f.id} name={f.name} color={f.color} img={f.img} size={46} />)}
             </div>
-            <span className="sm"><b>{studying.length} studying</b> now</span>
+            <div className="grow">
+              <div className="sm"><b>{studying.length} studying</b> now</div>
+              <div className="muted xs">{listNames(studying.map((f) => f.name))}</div>
+            </div>
           </div>
-          <div className="muted xs">{studying[0]?.name} and {studying.length - 1} others</div>
-        </Link>
-        <Link to="/dock" className="card mini-card">
-          <div className="mini-head"><span>Your dock</span><span className="chip">Configure</span></div>
-          <div className="stack-row">
-            <span className="dock-thumb"><Radio size={20} /></span>
-            <span className="sm"><b>{s.dock.name}</b><br /><span className="ok">● Connected</span></span>
-          </div>
-        </Link>
-      </div>
+        ) : (
+          <div className="muted sm">None of your friends are studying right now.</div>
+        )}
+      </Link>
     </Screen>
   )
 }
