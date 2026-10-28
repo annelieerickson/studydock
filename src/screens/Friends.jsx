@@ -110,7 +110,7 @@ export function FriendsList() {
               )
             })}
           </div>
-          <section className="card list">
+          <section className="card list leaderboard">
             {board.map((f, i) => (
               <div key={f.id} className={`person-row ${f.me ? 'me' : ''}`}>
                 <span className="rank">{i + 1}</span>
